@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "916617049293",
+    "project_id": "destek-talep",
+    "storage_bucket": "destek-talep.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:916617049293:android:17e7006c9a3b88815ca584",
+        "android_client_info": {
+          "package_name": "com.example.destek_talep_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDIlrgo5t5KDpfhEd3c9KO06nExNaK2fio"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
