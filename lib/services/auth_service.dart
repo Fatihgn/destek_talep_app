@@ -12,8 +12,8 @@ class AuthService {
   final userCollection = FirebaseFirestore.instance.collection('users');
   final firebaseAuth = FirebaseAuth.instance;
 
-  Future<void> signUp(
-      String name, String email, String password, BuildContext context) async {
+  Future<void> signUp(String name, String email, String password,
+      BuildContext context, String phone, String tcNo) async {
     final navigator = Navigator.of(context);
     try {
       final UserCredential userCredential = await firebaseAuth
@@ -22,12 +22,7 @@ class AuthService {
         final User currentUser = FirebaseAuth.instance.currentUser!;
         final String documentId = currentUser.uid;
         print(documentId);
-        registerUser(
-          name,
-          email,
-          password,
-          documentId,
-        );
+        registerUser(name, email, password, documentId, phone, tcNo);
         navigator.pushReplacement(
             MaterialPageRoute(builder: (context) => const HelpScreen()));
       }
@@ -58,13 +53,15 @@ class AuthService {
     }
   }
 
-  Future<void> registerUser(
-      String name, String email, String password, String uid) async {
+  Future<void> registerUser(String name, String email, String password,
+      String uid, String phone, String tcNo) async {
     await userCollection.doc(uid).set({
       'email': email,
       'name': name,
       "password": password,
       "posts": [],
+      "phone": phone,
+      "tcNo": tcNo,
     });
   }
 

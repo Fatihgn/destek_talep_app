@@ -21,6 +21,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _tName = TextEditingController();
   final _tPassword = TextEditingController();
   final _tEmail = TextEditingController();
+  final _tTelephone = TextEditingController();
+  final _tTcNo = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -94,82 +96,109 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 25),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(
-                      height: 50,
-                    ),
-                    Text(
-                      'Kaydol',
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                        fontSize: 25,
-                        fontWeight: FontWeight.bold,
-                        color: appColors.dark_blue,
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(
+                        height: 50,
                       ),
-                    ),
-                    const SizedBox(
-                      height: 40,
-                    ),
-                    AppTextfield(
-                        text: "İsim",
-                        icon: const Icon(Icons.person),
-                        controller: _tName,
-                        keyboardType: TextInputType.text),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    AppTextfield(
-                        text: "Email",
-                        icon: const Icon(Icons.email),
-                        controller: _tEmail,
-                        keyboardType: TextInputType.emailAddress),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    AppTextfield(
-                        text: "Şifre",
-                        icon: const Icon(Icons.lock),
-                        controller: _tPassword,
-                        keyboardType: TextInputType.text),
-                    const SizedBox(
-                      height: 40,
-                    ),
-                    AppButton(
-                        color: appColors.green,
-                        text: "Kaydol",
-                        textColor: Colors.white,
-                        onPressed: () => AuthService().signUp(_tName.text,
-                            _tEmail.text, _tPassword.text, context)),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Row(
-                      children: [
-                        const Spacer(),
-                        const Text(
-                          "Zaten bir hesabın var mı?   ",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 17),
+                      Text(
+                        'Kaydol',
+                        textAlign: TextAlign.left,
+                        style: TextStyle(
+                          fontSize: 25,
+                          fontWeight: FontWeight.bold,
+                          color: appColors.dark_blue,
                         ),
-                        InkWell(
-                          onTap: () {
-                            Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(
-                                    builder: (context) => const LoginScreen()));
-                          },
-                          child: Text(
-                            "Giriş Yap",
+                      ),
+                      const SizedBox(
+                        height: 40,
+                      ),
+                      AppTextfield(
+                          text: "İsim",
+                          icon: const Icon(Icons.person),
+                          controller: _tName,
+                          keyboardType: TextInputType.text),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      AppTextfield(
+                          text: "Tel No",
+                          icon: const Icon(Icons.phone),
+                          controller: _tTelephone,
+                          keyboardType: TextInputType.phone),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      AppTextfield(
+                          text: "Tc No",
+                          icon: const Icon(Icons.person),
+                          controller: _tTcNo,
+                          keyboardType: TextInputType.number),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      AppTextfield(
+                          text: "Email",
+                          icon: const Icon(Icons.email),
+                          controller: _tEmail,
+                          keyboardType: TextInputType.emailAddress),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      AppTextfield(
+                          text: "Şifre",
+                          icon: const Icon(Icons.lock),
+                          controller: _tPassword,
+                          keyboardType: TextInputType.text),
+                      const SizedBox(
+                        height: 40,
+                      ),
+                      AppButton(
+                          color: appColors.green,
+                          text: "Kaydol",
+                          textColor: Colors.white,
+                          onPressed: () => AuthService().signUp(
+                              _tName.text,
+                              _tEmail.text,
+                              _tPassword.text,
+                              context,
+                              _tTelephone.text,
+                              _tTcNo.text)),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      Row(
+                        children: [
+                          const Spacer(),
+                          const Text(
+                            "Zaten bir hesabın var mı?   ",
                             textAlign: TextAlign.center,
-                            style:
-                                TextStyle(fontSize: 17, color: appColors.blue),
+                            style: TextStyle(fontSize: 17),
                           ),
-                        ),
-                        const Spacer(),
-                      ],
-                    ),
-                  ],
+                          InkWell(
+                            onTap: () {
+                              Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const LoginScreen()));
+                            },
+                            child: Text(
+                              "Giriş Yap",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  fontSize: 17, color: appColors.blue),
+                            ),
+                          ),
+                          const Spacer(),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

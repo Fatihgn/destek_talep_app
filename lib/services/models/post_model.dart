@@ -17,14 +17,17 @@ class Posts {
 }
 
 class PostModel {
-  final String title, description, date, id;
+  final String title, description, date, id, imageUrl, category, adress;
   final bool isCheck;
   PostModel(
       {required this.title,
       required this.description,
       required this.date,
       required this.id,
-      required this.isCheck});
+      required this.isCheck,
+      required this.imageUrl,
+      required this.category,
+      required this.adress});
 
   factory PostModel.fromJson(Map<String, dynamic> json) {
     return PostModel(
@@ -32,6 +35,9 @@ class PostModel {
         description: json['description'],
         date: json['date'],
         id: json['id'],
-        isCheck: json['isCheck']);
+        isCheck: json['isCheck'],
+        imageUrl: json['imageUrl'],
+        category: json['category'],
+        adress: json['adress']);
   }
 }

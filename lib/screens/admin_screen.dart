@@ -1,30 +1,39 @@
 import 'package:destek_talep_app/helpers/app_colors.dart';
+import 'package:destek_talep_app/providers/filter_provider.dart';
 import 'package:destek_talep_app/screens/add_screen.dart';
+import 'package:destek_talep_app/screens/main_drawer.dart';
+import 'package:destek_talep_app/screens/user_info.dart';
 import 'package:destek_talep_app/services/auth_service.dart';
 import 'package:destek_talep_app/services/data_service.dart';
 import 'package:destek_talep_app/services/models/post_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class AdminScreen extends StatefulWidget {
+class AdminScreen extends ConsumerStatefulWidget {
   const AdminScreen({super.key});
 
   @override
-  State<AdminScreen> createState() => _AdminScreenState();
+  ConsumerState<AdminScreen> createState() => _AdminScreenState();
 }
 
-class _AdminScreenState extends State<AdminScreen> {
+class _AdminScreenState extends ConsumerState<AdminScreen> {
   @override
   Widget build(BuildContext context) {
+    final activeFilters = ref.watch(filterProvider);
+    bool oneriMi = activeFilters[Filter.oneri]!;
+    bool sikayetMi = activeFilters[Filter.sikayet]!;
+    bool teknikDestekMi = activeFilters[Filter.teknikDestek]!;
+    bool tumGonderilerMi = activeFilters[Filter.tumGonderiler]!;
+
     return SafeArea(
       child: Scaffold(
           backgroundColor: AppColors().dark_blue,
           appBar: AppBar(
             centerTitle: true,
             foregroundColor: Colors.white,
-            automaticallyImplyLeading: false,
             title: const Text(
-              'Tüm Şikayetler',
+              'Tüm Gönderiler',
               style: TextStyle(color: Colors.white),
             ),
             backgroundColor: AppColors().dark_blue,
@@ -37,6 +46,7 @@ class _AdminScreenState extends State<AdminScreen> {
               ),
             ],
           ),
+          drawer: const MainDrawer(),
           body: SingleChildScrollView(
             child: StreamBuilder<Posts>(
                 stream: DataService()
@@ -56,6 +66,15 @@ class _AdminScreenState extends State<AdminScreen> {
                   return Column(
                       children: List.generate(posts.posts.length, (index) {
                     final PostModel post = posts.posts[index];
+                    if (post.category == "Şikayet" && !sikayetMi) {
+                      return Container();
+                    }
+                    if (post.category == "Öneri" && !oneriMi) {
+                      return Container();
+                    }
+                    if (post.category == "Teknik Destek" && !teknikDestekMi) {
+                      return Container();
+                    }
                     return Stack(
                       children: [
                         Padding(
@@ -63,12 +82,21 @@ class _AdminScreenState extends State<AdminScreen> {
                               horizontal: 10, vertical: 10),
                           child: Container(
                             width: double.infinity,
-                            height: 270,
+                            height: 450,
                             padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
-                              color: post.isCheck
-                                  ? Colors.green[100]
-                                  : Colors.red[100],
+                              gradient: LinearGradient(
+                                  colors: post.isCheck
+                                      ? [
+                                          Colors.green.shade400,
+                                          Colors.green.shade100
+                                        ]
+                                      : [
+                                          Colors.red.shade400,
+                                          Colors.red.shade100
+                                        ],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Padding(
@@ -84,10 +112,11 @@ class _AdminScreenState extends State<AdminScreen> {
                                             MediaQuery.of(context).size.width *
                                                 0.64,
                                         child: Text(
-                                          post.title,
+                                          post.category,
                                           maxLines: 2,
                                           overflow: TextOverflow.ellipsis,
                                           style: const TextStyle(
+                                            color: Colors.black,
                                             fontSize: 20,
                                             fontWeight: FontWeight.bold,
                                           ),
@@ -100,7 +129,7 @@ class _AdminScreenState extends State<AdminScreen> {
                                                 0.2,
                                         child: Text(
                                           textAlign: TextAlign.right,
-                                          post.date,
+                                          "${post.date}  ${post.adress}",
                                           maxLines: 2,
                                           overflow: TextOverflow.ellipsis,
                                           style: const TextStyle(
@@ -111,8 +140,31 @@ class _AdminScreenState extends State<AdminScreen> {
                                     ],
                                   ),
                                   const SizedBox(height: 10),
+                                  Image.network(
+                                    post.imageUrl,
+                                    width: double.infinity,
+                                    height: 150,
+                                    fit: BoxFit.cover,
+                                  ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
                                   SizedBox(
-                                      height: 105,
+                                      height: 32,
+                                      child: Text(
+                                        post.title,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 25,
+                                        ),
+                                      )),
+                                  const SizedBox(
+                                    height: 5,
+                                  ),
+                                  SizedBox(
+                                      height: 110,
                                       child: Text(
                                         post.description,
                                         maxLines: 5,
@@ -150,6 +202,9 @@ class _AdminScreenState extends State<AdminScreen> {
                                       "id": post.id,
                                       "date": post.date,
                                       "isCheck": post.isCheck,
+                                      "imageUrl": post.imageUrl,
+                                      "category": post.category,
+                                      "adress": post.adress,
                                     }, false);
                                   },
                                   icon: const Icon(
@@ -165,12 +220,39 @@ class _AdminScreenState extends State<AdminScreen> {
                                       "id": post.id,
                                       "date": post.date,
                                       "isCheck": post.isCheck,
+                                      "imageUrl": post.imageUrl,
+                                      "category": post.category,
+                                      "adress": post.adress,
                                     }, true);
                                   },
                                   icon: const Icon(
                                     Icons.check,
                                     color: Colors.green,
                                   ),
+                                ),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                ElevatedButton.icon(
+                                  icon: const Icon(Icons.person),
+                                  style: ElevatedButton.styleFrom(
+                                      foregroundColor: AppColors().dark_blue),
+                                  label: const Text('Kullanıcı Bilgileri'),
+                                  onPressed: () async {
+                                    final a =
+                                        await DataService().getUser(post.id);
+                                    print(await DataService().getUser(post.id));
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => UserInfoScreen(
+                                          name: a["name"],
+                                          email: a["email"],
+                                          phone: a["phone"],
+                                          tcNo: a["tcNo"],
+                                        ),
+                                      ),
+                                    );
+                                  },
                                 ),
                               ],
                             ),

@@ -1,10 +1,14 @@
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:destek_talep_app/services/models/post_model.dart';
+import 'package:destek_talep_app/services/models/user_model.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class DataService {
   final userCol = FirebaseFirestore.instance.collection('users');
+  final storage = FirebaseStorage.instance;
 
   Future<Posts> getUserPosts(String userId) async {
     final userDoc = await userCol.doc(userId).get().then(
@@ -12,6 +16,14 @@ class DataService {
         );
     final postModel = Posts.fromJson(userDoc!);
     return postModel;
+  }
+
+  Future<Map<String, dynamic>> getUser(String userId) async {
+    final userDoc = await userCol.doc(userId).get().then(
+          (value) => value.data(),
+        );
+
+    return userDoc!;
   }
 
   Stream<Posts> getUserPostsAsStream(String userId) {
@@ -23,11 +35,18 @@ class DataService {
     return userSnapshot;
   }
 
-  Future<void> insertPost(String id, String title, String description) async {
+  Future<void> insertPost(String id, String title, String description,
+      Uint8List? file, String category, String adress) async {
     DateTime now = DateTime.now();
-    String idd = Random().nextInt(100000).toString();
-
     String date = "${now.day}.${now.month}.${now.year} ";
+    String imageUrl = "";
+    if (file != null) {
+      imageUrl = await uploadImageStorage("postImage-$title", file);
+    } else {
+      imageUrl =
+          "https://demokrathaberorg.teimg.com/crop/1280x720/demokrathaber-org/images/haberler/2015/09/nereden_cikti_bu_noktalama_isaretleri_h54469_0c376.jpg";
+    }
+
     await userCol.doc(id).update({
       "posts": FieldValue.arrayUnion([
         {
@@ -35,7 +54,10 @@ class DataService {
           "description": description,
           "date": date,
           "id": id,
-          "isCheck": false
+          "isCheck": false,
+          "imageUrl": imageUrl,
+          "category": category,
+          "adress": adress
         }
       ])
     });
@@ -46,17 +68,33 @@ class DataService {
           "description": description,
           "date": date,
           "id": id,
-          "isCheck": false
+          "isCheck": false,
+          "imageUrl": imageUrl,
+          "category": category,
+          "adress": adress
         }
       ])
     });
   }
 
-  Future<void> updatePost(String userID, String title, String description,
-      Map<String, dynamic> post) async {
+  Future<void> updatePost(
+      String userID,
+      String title,
+      String description,
+      Map<String, dynamic> post,
+      Uint8List? file,
+      String category,
+      String adress) async {
     DateTime now = DateTime.now();
-
     String datenow = "${now.day}.${now.month}.${now.year} ";
+
+    String imageUrl = "";
+    if (file != null) {
+      imageUrl = await uploadImageStorage("postImage-$title", file);
+    } else {
+      imageUrl =
+          "https://demokrathaberorg.teimg.com/crop/1280x720/demokrathaber-org/images/haberler/2015/09/nereden_cikti_bu_noktalama_isaretleri_h54469_0c376.jpg";
+    }
 
     await removePost(userID, post);
 
@@ -67,7 +105,10 @@ class DataService {
           "description": description,
           "id": post["id"],
           "date": datenow,
-          "isCheck": post["isCheck"]
+          "isCheck": post["isCheck"],
+          "imageUrl": imageUrl,
+          "category": category,
+          "adress": adress
         }
       ])
     });
@@ -87,7 +128,10 @@ class DataService {
           "description": post["description"],
           "id": post["id"],
           "date": post["date"],
-          "isCheck": trueFalse
+          "isCheck": trueFalse,
+          "imageUrl": post["imageUrl"],
+          "category": post["category"],
+          "adress": post["adress"]
         }
       ])
     });
@@ -98,7 +142,10 @@ class DataService {
           "description": post["description"],
           "id": post["id"],
           "date": post["date"],
-          "isCheck": trueFalse
+          "isCheck": trueFalse,
+          "imageUrl": post["imageUrl"],
+          "category": post["category"],
+          "adress": post["adress"]
         }
       ])
     });
@@ -108,5 +155,13 @@ class DataService {
     await userCol.doc(userId).update({
       "posts": FieldValue.arrayRemove([post])
     });
+  }
+
+  Future<String> uploadImageStorage(String childName, Uint8List file) async {
+    Reference ref = storage.ref().child(childName);
+    UploadTask uploadTask = ref.putData(file);
+    TaskSnapshot snapshot = await uploadTask;
+    String downloadUrl = await snapshot.ref.getDownloadURL();
+    return downloadUrl;
   }
 }

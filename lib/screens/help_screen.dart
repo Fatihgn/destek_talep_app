@@ -80,7 +80,7 @@ class _HelpScreenState extends State<HelpScreen> {
                               horizontal: 10, vertical: 10),
                           child: Container(
                             width: double.infinity,
-                            height: 270,
+                            height: 450,
                             padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
                               color: Colors.white,
@@ -99,7 +99,7 @@ class _HelpScreenState extends State<HelpScreen> {
                                             MediaQuery.of(context).size.width *
                                                 0.64,
                                         child: Text(
-                                          post.title,
+                                          post.category,
                                           maxLines: 2,
                                           overflow: TextOverflow.ellipsis,
                                           style: const TextStyle(
@@ -115,7 +115,7 @@ class _HelpScreenState extends State<HelpScreen> {
                                                 0.2,
                                         child: Text(
                                           textAlign: TextAlign.right,
-                                          post.date,
+                                          "${post.date}  ${post.adress}",
                                           maxLines: 2,
                                           overflow: TextOverflow.ellipsis,
                                           style: const TextStyle(
@@ -126,8 +126,31 @@ class _HelpScreenState extends State<HelpScreen> {
                                     ],
                                   ),
                                   const SizedBox(height: 10),
+                                  Image.network(
+                                    post.imageUrl,
+                                    width: double.infinity,
+                                    height: 150,
+                                    fit: BoxFit.cover,
+                                  ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
                                   SizedBox(
-                                      height: 105,
+                                      height: 32,
+                                      child: Text(
+                                        post.title,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          color: AppColors().green,
+                                          fontSize: 25,
+                                        ),
+                                      )),
+                                  const SizedBox(
+                                    height: 5,
+                                  ),
+                                  SizedBox(
+                                      height: 110,
                                       child: Text(
                                         post.description,
                                         maxLines: 5,
@@ -166,7 +189,10 @@ class _HelpScreenState extends State<HelpScreen> {
                                         "description": post.description,
                                         "id": post.id,
                                         "date": post.date,
-                                        "isCheck": post.isCheck
+                                        "isCheck": post.isCheck,
+                                        "imageUrl": post.imageUrl,
+                                        "category": post.category,
+                                        "adress": post.adress,
                                       },
                                     );
                                     DataService().removePost(
@@ -176,7 +202,10 @@ class _HelpScreenState extends State<HelpScreen> {
                                         "description": post.description,
                                         "id": post.id,
                                         "date": post.date,
-                                        "isCheck": post.isCheck
+                                        "isCheck": post.isCheck,
+                                        "imageUrl": post.imageUrl,
+                                        "category": post.category,
+                                        "adress": post.adress,
                                       },
                                     );
                                   },
@@ -197,7 +226,10 @@ class _HelpScreenState extends State<HelpScreen> {
                                                         post.description,
                                                     "id": post.id,
                                                     "date": post.date,
-                                                    "isCheck": post.isCheck
+                                                    "isCheck": post.isCheck,
+                                                    "imageUrl": post.imageUrl,
+                                                    "category": post.category,
+                                                    "adress": post.adress,
                                                   },
                                                 )));
                                   },
