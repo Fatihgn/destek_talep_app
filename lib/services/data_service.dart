@@ -4,10 +4,12 @@ import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:destek_talep_app/services/models/post_model.dart';
 import 'package:destek_talep_app/services/models/user_model.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 class DataService {
   final userCol = FirebaseFirestore.instance.collection('users');
+  final adminCol = FirebaseFirestore.instance.collection('admins');
   final storage = FirebaseStorage.instance;
 
   Future<Posts> getUserPosts(String userId) async {
@@ -35,8 +37,26 @@ class DataService {
     return userSnapshot;
   }
 
-  Future<void> insertPost(String id, String title, String description,
+  Stream<Posts> getUserPostsAsStreamAdmin(String userId) {
+    final userSnapshot = adminCol
+        .doc(userId)
+        .snapshots()
+        .map((event) => Posts.fromJson(event.data()!));
+
+    return userSnapshot;
+  }
+
+  Future<void> insertPost(User currentUser, String title, String description,
       Uint8List? file, String category, String adress) async {
+    final userInfos = await userCol.doc(currentUser.uid).get();
+    print(userInfos.data());
+    final vergiNo = userInfos.data()!["vergiNo"];
+    print(vergiNo);
+
+    final adminInfos =
+        await adminCol.where("vergiNo", isEqualTo: vergiNo).get();
+    print(adminInfos.docs[0].id);
+
     DateTime now = DateTime.now();
     String date = "${now.day}.${now.month}.${now.year} ";
     String imageUrl = "";
@@ -47,13 +67,13 @@ class DataService {
           "https://demokrathaberorg.teimg.com/crop/1280x720/demokrathaber-org/images/haberler/2015/09/nereden_cikti_bu_noktalama_isaretleri_h54469_0c376.jpg";
     }
 
-    await userCol.doc(id).update({
+    await userCol.doc(currentUser.uid).update({
       "posts": FieldValue.arrayUnion([
         {
           "title": title,
           "description": description,
           "date": date,
-          "id": id,
+          "id": currentUser.uid,
           "isCheck": false,
           "imageUrl": imageUrl,
           "category": category,
@@ -61,13 +81,13 @@ class DataService {
         }
       ])
     });
-    await userCol.doc("gSqn2bstJ3S8iPlDP2iy5ANnDWE3").update({
+    await adminCol.doc(adminInfos.docs[0].id).update({
       "posts": FieldValue.arrayUnion([
         {
           "title": title,
           "description": description,
           "date": date,
-          "id": id,
+          "id": currentUser.uid,
           "isCheck": false,
           "imageUrl": imageUrl,
           "category": category,
@@ -78,7 +98,7 @@ class DataService {
   }
 
   Future<void> updatePost(
-      String userID,
+      User currentUser,
       String title,
       String description,
       Map<String, dynamic> post,
@@ -96,9 +116,28 @@ class DataService {
           "https://demokrathaberorg.teimg.com/crop/1280x720/demokrathaber-org/images/haberler/2015/09/nereden_cikti_bu_noktalama_isaretleri_h54469_0c376.jpg";
     }
 
-    await removePost(userID, post);
+    final userInfos = await userCol.doc(currentUser.uid).get();
+    final vergiNo = userInfos.data()!["vergiNo"];
+    final adminInfos =
+        await adminCol.where("vergiNo", isEqualTo: vergiNo).get();
 
-    await userCol.doc(userID).update({
+    await removePost(currentUser.uid, post);
+
+    await userCol.doc(currentUser.uid).update({
+      "posts": FieldValue.arrayUnion([
+        {
+          "title": title,
+          "description": description,
+          "id": post["id"],
+          "date": datenow,
+          "isCheck": post["isCheck"],
+          "imageUrl": imageUrl,
+          "category": category,
+          "adress": adress
+        }
+      ])
+    });
+    await adminCol.doc(adminInfos.docs[0].id).update({
       "posts": FieldValue.arrayUnion([
         {
           "title": title,
@@ -115,11 +154,13 @@ class DataService {
   }
 
   Future<void> updateCheck(Map<String, dynamic> post, bool trueFalse) async {
-    print(post);
-    print(post["isCheck"]);
     final id = post["id"];
+    final userInfos = await userCol.doc(id).get();
+    final vergiNo = userInfos.data()!["vergiNo"];
+    final adminInfos =
+        await adminCol.where("vergiNo", isEqualTo: vergiNo).get();
+
     await removePost(post["id"], post);
-    await removePost("gSqn2bstJ3S8iPlDP2iy5ANnDWE3", post);
 
     await userCol.doc(id).update({
       "posts": FieldValue.arrayUnion([
@@ -135,7 +176,7 @@ class DataService {
         }
       ])
     });
-    await userCol.doc("gSqn2bstJ3S8iPlDP2iy5ANnDWE3").update({
+    await adminCol.doc(adminInfos.docs[0].id).update({
       "posts": FieldValue.arrayUnion([
         {
           "title": post["title"],
@@ -152,7 +193,15 @@ class DataService {
   }
 
   Future<void> removePost(String userId, Map post) async {
+    final userInfos = await userCol.doc(userId).get();
+    final vergiNo = userInfos.data()!["vergiNo"];
+    final adminInfos =
+        await adminCol.where("vergiNo", isEqualTo: vergiNo).get();
+
     await userCol.doc(userId).update({
+      "posts": FieldValue.arrayRemove([post])
+    });
+    await adminCol.doc(adminInfos.docs[0].id).update({
       "posts": FieldValue.arrayRemove([post])
     });
   }

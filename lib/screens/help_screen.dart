@@ -30,7 +30,7 @@ class _HelpScreenState extends State<HelpScreen> {
             foregroundColor: Colors.white,
             automaticallyImplyLeading: false,
             title: const Text(
-              'Şikayetlerim',
+              'Taleplerim',
               style: TextStyle(color: Colors.white),
             ),
             backgroundColor: AppColors().dark_blue,
@@ -66,7 +66,7 @@ class _HelpScreenState extends State<HelpScreen> {
                   if (posts!.posts.isEmpty) {
                     return const Center(
                       child: Text(
-                        'Hiç şikayetin yok',
+                        'Hiç gönderiniz yok',
                       ),
                     );
                   }

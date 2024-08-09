@@ -156,7 +156,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             "Kaydol",
                             textAlign: TextAlign.center,
                             style:
-                                TextStyle(fontSize: 17, color: appColors.blue),
+                                TextStyle(fontSize: 17, color: appColors.green),
                           ),
                         ),
                         const Spacer(),

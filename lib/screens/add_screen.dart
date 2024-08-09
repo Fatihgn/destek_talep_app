@@ -44,20 +44,12 @@ class _AddScreenState extends State<AddScreen> {
         formKey.currentState!.validate() && tfKategori.text.isNotEmpty;
     if (kontrolSonucu) {
       if (widget.guncellemeMi) {
-        DataService().updatePost(
-            "gSqn2bstJ3S8iPlDP2iy5ANnDWE3",
-            tfIsim.text,
-            tfAciklama.text,
-            widget.post!,
-            _image,
-            tfKategori.text,
-            tfAdres.text);
-        DataService().updatePost(currentUser.uid, tfIsim.text, tfAciklama.text,
+        DataService().updatePost(currentUser, tfIsim.text, tfAciklama.text,
             widget.post!, _image, tfKategori.text, tfAdres.text);
 
         Navigator.of(context).pop();
       } else {
-        DataService().insertPost(currentUser.uid, tfIsim.text, tfAciklama.text,
+        DataService().insertPost(currentUser, tfIsim.text, tfAciklama.text,
             _image, tfKategori.text, tfAdres.text);
         Navigator.of(context).pop();
       }

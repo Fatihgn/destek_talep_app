@@ -23,6 +23,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _tEmail = TextEditingController();
   final _tTelephone = TextEditingController();
   final _tTcNo = TextEditingController();
+  final _tVergiNo = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -95,13 +96,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 25),
+                padding: const EdgeInsets.only(left: 25, right: 25, top: 15),
                 child: SingleChildScrollView(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(
-                        height: 50,
+                        height: 30,
                       ),
                       Text(
                         'Kaydol',
@@ -124,6 +125,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         height: 20,
                       ),
                       AppTextfield(
+                          text: "Vergi No",
+                          icon: const Icon(Icons.numbers),
+                          controller: _tVergiNo,
+                          keyboardType: TextInputType.number),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      AppTextfield(
                           text: "Tel No",
                           icon: const Icon(Icons.phone),
                           controller: _tTelephone,
@@ -133,7 +142,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       AppTextfield(
                           text: "Tc No",
-                          icon: const Icon(Icons.person),
+                          icon: const Icon(Icons.edit_note_outlined),
                           controller: _tTcNo,
                           keyboardType: TextInputType.number),
                       const SizedBox(
@@ -165,7 +174,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               _tPassword.text,
                               context,
                               _tTelephone.text,
-                              _tTcNo.text)),
+                              _tTcNo.text,
+                              _tVergiNo.text)),
                       const SizedBox(
                         height: 20,
                       ),
@@ -188,14 +198,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               "Giriş Yap",
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                  fontSize: 17, color: appColors.blue),
+                                  fontSize: 17, color: appColors.green),
                             ),
                           ),
                           const Spacer(),
                         ],
                       ),
                       const SizedBox(
-                        height: 20,
+                        height: 50,
                       ),
                     ],
                   ),

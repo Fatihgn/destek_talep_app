@@ -38,7 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Padding(
                   padding: const EdgeInsets.all(60.0),
                   child: Image.asset(
-                    'assets/images/logo2.png',
+                    'assets/images/icons.png',
                   ),
                 ),
               ),
@@ -60,9 +60,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             Padding(
                               padding: const EdgeInsets.only(top: 50),
                               child: Text(
-                                'Şikayet Destek Uygulaması',
+                                'Destek Talep Uygulaması',
                                 style: TextStyle(
-                                  fontSize: 29,
+                                  fontSize: 27,
                                   color: appColors.dark_blue,
                                   fontWeight: FontWeight.bold,
                                 ),

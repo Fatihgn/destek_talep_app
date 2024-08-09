@@ -13,7 +13,7 @@ class AuthService {
   final firebaseAuth = FirebaseAuth.instance;
 
   Future<void> signUp(String name, String email, String password,
-      BuildContext context, String phone, String tcNo) async {
+      BuildContext context, String phone, String tcNo, String vergiNo) async {
     final navigator = Navigator.of(context);
     try {
       final UserCredential userCredential = await firebaseAuth
@@ -22,7 +22,7 @@ class AuthService {
         final User currentUser = FirebaseAuth.instance.currentUser!;
         final String documentId = currentUser.uid;
         print(documentId);
-        registerUser(name, email, password, documentId, phone, tcNo);
+        registerUser(name, email, password, documentId, phone, tcNo, vergiNo);
         navigator.pushReplacement(
             MaterialPageRoute(builder: (context) => const HelpScreen()));
       }
@@ -40,7 +40,10 @@ class AuthService {
       if (userCredential.user != null) {
         final User currentUser = FirebaseAuth.instance.currentUser!;
         final String documentId = currentUser.uid;
-        if (documentId == "gSqn2bstJ3S8iPlDP2iy5ANnDWE3") {
+        final doc =
+            FirebaseFirestore.instance.collection("admins").doc(documentId);
+        final documentSnapshot = await doc.get();
+        if (documentSnapshot.exists) {
           navigator.pushReplacement(
               MaterialPageRoute(builder: (context) => const AdminScreen()));
         } else {
@@ -54,7 +57,7 @@ class AuthService {
   }
 
   Future<void> registerUser(String name, String email, String password,
-      String uid, String phone, String tcNo) async {
+      String uid, String phone, String tcNo, String vergiNo) async {
     await userCollection.doc(uid).set({
       'email': email,
       'name': name,
@@ -62,6 +65,7 @@ class AuthService {
       "posts": [],
       "phone": phone,
       "tcNo": tcNo,
+      "vergiNo": vergiNo
     });
   }
 

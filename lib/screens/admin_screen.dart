@@ -6,6 +6,7 @@ import 'package:destek_talep_app/screens/user_info.dart';
 import 'package:destek_talep_app/services/auth_service.dart';
 import 'package:destek_talep_app/services/data_service.dart';
 import 'package:destek_talep_app/services/models/post_model.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -18,6 +19,7 @@ class AdminScreen extends ConsumerStatefulWidget {
 }
 
 class _AdminScreenState extends ConsumerState<AdminScreen> {
+  final User currentUser = FirebaseAuth.instance.currentUser!;
   @override
   Widget build(BuildContext context) {
     final activeFilters = ref.watch(filterProvider);
@@ -49,8 +51,8 @@ class _AdminScreenState extends ConsumerState<AdminScreen> {
           drawer: const MainDrawer(),
           body: SingleChildScrollView(
             child: StreamBuilder<Posts>(
-                stream: DataService()
-                    .getUserPostsAsStream("gSqn2bstJ3S8iPlDP2iy5ANnDWE3"),
+                stream:
+                    DataService().getUserPostsAsStreamAdmin(currentUser.uid),
                 builder: (context, snapshot) {
                   final Posts? posts = snapshot.data;
                   if (snapshot.connectionState == ConnectionState.waiting) {
@@ -59,7 +61,7 @@ class _AdminScreenState extends ConsumerState<AdminScreen> {
                   if (posts!.posts.isEmpty) {
                     return const Center(
                       child: Text(
-                        'Hiç şikayetin yok',
+                        'Hiç gönderi yok',
                       ),
                     );
                   }
